@@ -8,8 +8,8 @@
 <body>
 <h2>User Information Form</h2>
 <form action="info" method="post">
-    <label for="name">Name:</label><br>
-    <input type="text" id="name" name="name" required><br><br>
+    <label for="username">Name:</label><br>
+    <input type="text" id="username" name="username" required><br><br>
 
     <input type="submit" value="Submit">
 </form>

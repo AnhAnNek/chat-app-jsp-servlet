@@ -1,4 +1,7 @@
-package com.example.chatapp;
+package com.example.chatapp.servlet;
+
+import com.example.chatapp.model.User;
+import com.example.chatapp.util.IdGenerator;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,11 +14,20 @@ import java.io.IOException;
 public class InfoServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String name = req.getParameter("name");
+        String username = req.getParameter("username");
 
-        req.setAttribute("name", name);
+        User user = new User(username, IdGenerator.generateID(10),true);
+
+        req.setAttribute("user", user);
 
         String url = "/index.jsp";
         getServletContext().getRequestDispatcher(url).forward(req, resp);
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (req.getParameter("name") != null) {
+            doPost(req, resp);
+        }
     }
 }
