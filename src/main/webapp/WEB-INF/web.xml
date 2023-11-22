@@ -5,6 +5,8 @@
          version="4.0">
     <display-name>ChatApp</display-name>
     <welcome-file-list>
+        <welcome-file>test-save-image.jsp</welcome-file>
+        <welcome-file>test-load-image.jsp</welcome-file>
         <welcome-file>input.jsp</welcome-file>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>

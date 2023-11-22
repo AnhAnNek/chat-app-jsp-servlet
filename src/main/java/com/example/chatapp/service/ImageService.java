@@ -22,6 +22,10 @@ public class ImageService {
         return fileIO.readImage(targetPath);
     }
 
+    public BufferedImage readImage(String fullPath) {
+        return fileIO.readImage(fullPath);
+    }
+
     public void writeImage(ServletContext context, BufferedImage bi, String appendPath) {
         String savedPath = context.getRealPath("/") + appendPath;
         String formatName = getFileExtension(appendPath);
