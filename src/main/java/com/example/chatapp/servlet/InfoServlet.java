@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 
 @WebServlet("/info")
 public class InfoServlet extends HttpServlet {
@@ -35,13 +34,13 @@ public class InfoServlet extends HttpServlet {
 
         String url;
         if (user.getRole().equals(User.ERole.SALESPERSON)) {
-            List<User> customers = MessageService.getIns()
-                    .getChattedUsersByCurrentUser(username);
-            List<ChatMessage> userMessages = MessageService.getIns()
-                    .getMessagesByReceiver(username, "queanpham");
-
-            req.setAttribute("customers", customers);
-            req.setAttribute("userMessages", userMessages);
+//            List<User> customers = MessageService.getIns()
+//                    .getChattedUsersByCurrentUser(username);
+//            List<ChatMessage> userMessages = MessageService.getIns()
+//                    .getMessagesByReceiver(username, "queanpham");
+//
+//            req.setAttribute("customers", customers);
+//            req.setAttribute("userMessages", userMessages);
 
             url = "/salesperson-chatbox.jsp";
         } else {

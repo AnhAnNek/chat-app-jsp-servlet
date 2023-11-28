@@ -42,7 +42,7 @@ public class ChatWebsocket {
         if (user == null) {
             return;
         }
-        List<ChatMessage> msgs = messageService.getMessagesByReceiver(senderUsername, receiverUsername);
+        List<ChatMessage> msgs = messageService.getMessages(senderUsername, receiverUsername);
         msgs.forEach(this::sendMessage);
     }
 
@@ -56,6 +56,7 @@ public class ChatWebsocket {
         ChatMessage chatMessage = new ChatMessage(message, Timestamp.from(Instant.now()),
                 senderUsername, receiverUsername);
         chatService.sendMessageToOneUser(chatMessage);
+        sendMessage(chatMessage);
         messageService.save(chatMessage);
     }
 
@@ -84,5 +85,13 @@ public class ChatWebsocket {
 
     public void setSenderUsername(String senderUsername) {
         this.senderUsername = senderUsername;
+    }
+
+    public String getReceiverUsername() {
+        return receiverUsername;
+    }
+
+    public void setReceiverUsername(String receiverUsername) {
+        this.receiverUsername = receiverUsername;
     }
 }

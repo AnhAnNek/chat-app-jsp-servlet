@@ -22,10 +22,14 @@ public class GetChattedUsersServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String username = req.getParameter("username");
 
-        PrintWriter pw = resp.getWriter();
         String jsonMsgs = getChattedUsers(username);
+
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+
+        PrintWriter pw = resp.getWriter();
         pw.println(jsonMsgs);
-        pw.close();
+        pw.flush();
     }
 
     private String getChattedUsers(String username) {

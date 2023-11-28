@@ -1,5 +1,3 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -71,22 +69,20 @@
 <div class="chat-container">
     <div class="conversation-list" id="conversationList">
         <ul id="conversationListUl">
-<%--            <c:forEach var="customer" items="${customers}">--%>
-<%--                <li onclick="loadConversationByUsername('${customer.username}')">${customer.username}</li>--%>
-<%--            </c:forEach>--%>
+            <li onclick="loadMessages('queanpham')">queanpham</li>
         </ul>
     </div>
 
     <div class="message-pane">
         <div class="chat" id="chat">
-<%--            <c:forEach var="message" items="${userMessages}">--%>
-<%--                <p><strong>${message.senderUsername}</strong>: ${message.message}</p>--%>
-<%--            </c:forEach>--%>
+<%--            <strong style="color: green;"></strong>[message]<br/>--%>
         </div>
 
         <input type="text" id="msg" class="message-input" placeholder="Type your message...">
         <button onclick="sendMessage()">Send</button>
     </div>
+
+    <button onclick="fetchChattedUsers('${user.username}')">Load Conversations</button>
 </div>
 
 <script type="text/javascript">
@@ -94,7 +90,7 @@
     var curChattingUsername = "queanpham";
     var wsUrl;
 
-    if (window.location.protocol == 'http:') {
+    if (window.location.protocol === 'http:') {
         wsUrl = 'ws://';
     } else {
         wsUrl = 'wss://';
@@ -104,62 +100,80 @@
         '/chat/' + currentUsername + '/' + curChattingUsername);
 
     ws.onmessage = function(event) {
-        var chatMessage = JSON.parse(event.data);
+        const chatMessage = JSON.parse(event.data);
         addMessage(chatMessage)
     };
 
-    function addMessage(chatMessage) {
-        if (chatMessage.senderUsername !== curChattingUsername || chatMessage.senderUsername !== currentUsername) {
-            return;
-        }
-
-        const chat = document.getElementById('chat');
-        chat.innerHTML+="["+chatMessage.senderUsername+"]: " + chatMessage.message+"<br/>";
-    }
-
-    function loadConversationByUsername(receiver) {
-
-        fetchMessages(currentUsername, receiver);
-
-        curChattingUsername = receiver;
-    }
-
-    function fetchChattedUsers(sender, receiver) {
-        fetch("/get-chatted-users?sender=" + sender + "&receiver=" + receiver)
+    function fetchChattedUsers(sender) {
+        const contextPath = '<%= request.getContextPath() %>';
+        const restUrl = window.location.protocol + "//" + window.location.host + contextPath + "/get-chatted-users" +
+            "?username=" + sender;
+        console.log("fetchChattedUsers - restUrl: " + restUrl);
+        fetch(restUrl)
             .then(response => response.json())
             .then(chattedUsers => {
-                // Update the conversationList with the fetched chatted users
-                const conversationList = document.getElementById('conversationList');
-                conversationList.innerHTML = ''; // Clear existing users
+                clearConversations();
                 chattedUsers.forEach(user => {
-                    var chattedUsername = user.username;
-                    conversationList.innerHTML += `<li onclick="loadConversationByUsername('${chattedUsername}')">${chattedUsername}</li>`;
+                    console.log(user.username);
+                    console.log(user.role);
+                    addConversationItem(user.username);
                 });
             })
             .catch(error => console.error('Error fetching chatted users:', error));
     }
 
+    function loadMessages(receiver) {
+        curChattingUsername = receiver
+        fetchMessages(currentUsername, receiver)
+    }
 
-    function fetchMessages(username) {
-        fetch(`/get-messages?username=` + username)
+    function fetchMessages(sender, receiver) {
+        const contextPath = '<%= request.getContextPath() %>';
+        const restUrl = window.location.protocol + "//" + window.location.host + contextPath +
+            "/get-messages?sender=" + sender + "&receiver=" + receiver;
+        console.log("fetchMessages - restUrl: " + restUrl);
+        fetch(restUrl)
             .then(response => response.json())
-            .then(messages => {
-                // Update the messageContainer with the fetched messages
-                const messageContainer = document.getElementById('messageContainer');
-                messageContainer.innerHTML = ''; // Clear existing messages
-                messages.forEach(message => {
-                    var senderUsername = message.senderUsername;
-                    var msg = messages.msg;
-                    messageContainer.innerHTML += "<p><strong>" + senderUsername+ "</strong>: "+ msg +"</p>";
+            .then(chatMessages => {
+                clearMsgs();
+                chatMessages.forEach(cm => {
+                    console.log(cm.message);
+                    console.log(cm.sendingTime);
+                    console.log(cm.senderUsername);
+                    console.log(cm.receiverUsername);
+                    addMessage(cm);
                 });
             })
             .catch(error => console.error('Error fetching messages:', error));
     }
 
+    function clearMsgs() {
+        const chat = document.getElementById('chat');
+        if (chat) {
+            chat.innerHTML = '';
+        } else {
+            console.error("Element 'chat' not found.");
+        }
+    }
+
+    function addMessage(chatMessage) {
+        const sender = chatMessage.senderUsername;
+        const chat = document.getElementById('chat');
+
+        if (chat) {
+            const msg = chatMessage.message;
+            const isCurrentUser = sender === currentUsername;
+            const senderColor = isCurrentUser ? 'green' : 'red';
+            const formattedSender = '<span style="color: ' + senderColor + ';">[' + sender + ']</span>';
+            const formattedMessage = formattedSender + ': ' + msg + '<br/>';
+            chat.innerHTML += formattedMessage;
+        } else {
+            console.error("Element 'chat' not found.");
+        }
+    }
+
     function sendMessage() {
-        console.log("WS: " + ws)
-        var messageInput = document.getElementById('msg');
-        var msgStr = messageInput.value;
+        const msgStr = document.getElementById("msg").value.trim();
 
         if(msgStr) {
             ws.send(msgStr);
@@ -168,12 +182,36 @@
         }
     }
 
-    fetchChattedUsers(username)
-    loadConversationByUsername(username)
+    function clearConversations() {
+        const conversationList = document.getElementById('conversationList');
+        conversationList.innerHTML = '';
+    }
 
+    function addConversationItem(receiver) {
+        console.log("OnClick addConversationItem")
+        const conversationListUl = document.getElementById('conversationListUl');
 
-    const conversationList = document.getElementById('conversationList');
-    conversationList.innerHTML += `<li onclick="loadConversationByUsername('1')">vanannek</li>`;
+        if (conversationListUl) {
+            const li = document.createElement('li');
+            li.textContent = receiver;
+            li.onclick = function () {
+                loadMessages(receiver);
+            };
+            conversationListUl.appendChild(li);
+        } else {
+            console.error("Element 'conversationListUl' not found.");
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // fetchChattedUsers(currentUsername);
+    });
+
+    document.getElementById("msg").addEventListener("keyup", function(event) {
+        if (event.key === "Enter") {
+            sendMessage();
+        }
+    });
 </script>
 
 </body>

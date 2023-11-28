@@ -33,7 +33,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public void sendMessageToOneUser(ChatMessage message) {
-        String targetUser = message.getSenderUsername();
+        String targetUser = message.getReceiverUsername();
         for (ChatWebsocket chatWebsocket : chatWebsockets) {
             if (chatWebsocket.getSenderUsername().equals(targetUser)) {
                 chatWebsocket.sendMessage(message);

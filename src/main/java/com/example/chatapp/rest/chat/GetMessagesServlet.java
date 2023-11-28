@@ -23,14 +23,18 @@ public class GetMessagesServlet extends HttpServlet {
         String sender = req.getParameter("sender");
         String receiver = req.getParameter("receiver");
 
-        PrintWriter pw = resp.getWriter();
         String jsonMsgs = getMsgs(sender, receiver);
+
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+
+        PrintWriter pw = resp.getWriter();
         pw.println(jsonMsgs);
         pw.close();
     }
 
     private String getMsgs(String sender, String receiver) {
-        List<ChatMessage> msgs = messageService.getMessagesByReceiver(sender, receiver);
+        List<ChatMessage> msgs = messageService.getMessages(sender, receiver);
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.writeValueAsString(msgs);

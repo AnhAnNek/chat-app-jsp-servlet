@@ -41,7 +41,7 @@
     var curChattingUsername = "vanannek";
     var wsUrl;
 
-    if (window.location.protocol == 'http:') {
+    if (window.location.protocol === 'http:') {
         wsUrl = 'ws://';
     } else {
         wsUrl = 'wss://';
@@ -67,12 +67,10 @@
     }
 
     function sendMsg() {
-        console.log("WS: " + ws)
-
-        var msg = document.getElementById("msg").value;
-        if(msg) {
-            ws.send(msg);
-            console.log(msg)
+        var msgStr = document.getElementById("msg").value.trim();
+        if(msgStr) {
+            ws.send(msgStr);
+            console.log(msgStr)
             document.getElementById("msg").value="";
         }
     }

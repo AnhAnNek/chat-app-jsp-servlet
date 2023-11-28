@@ -56,13 +56,13 @@ public class MessageService {
                 .map(ChatMessage::getReceiverUsername)
                 .collect(Collectors.toList());
 
-        List<User> users = receiverUsernames.stream()
+        return receiverUsernames.stream()
                 .map(username -> UserService.getIns().getByUsername(username))
+                .distinct()
                 .collect(Collectors.toList());
-        return users;
     }
 
-    public List<ChatMessage> getMessagesByReceiver(String sender, String receiver) {
+    public List<ChatMessage> getMessages(String sender, String receiver) {
         return messages.stream()
                 .filter(cm -> isMyChatMessage(cm, sender, receiver))
                 .sorted(Comparator.comparing(ChatMessage::getSendingTime))
