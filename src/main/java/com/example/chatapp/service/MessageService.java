@@ -35,6 +35,8 @@ public class MessageService {
 
         messages.add(new ChatMessage("Đéo Biết", Timestamp.from(Instant.now()),
                 "vanannek", "queanpham"));
+        messages.add(new ChatMessage("Hihi", Timestamp.from(Instant.now()),
+                "vanannek", "queanpham"));
 
 
         messages.add(new ChatMessage("Chào Shop", Timestamp.from(Instant.now()),
@@ -42,6 +44,8 @@ public class MessageService {
         messages.add(new ChatMessage("Adapter cho Asus X515 bao nhiêu ạ", Timestamp.from(Instant.now()),
                 "anhoang", "vanannek"));
         messages.add(new ChatMessage("Đéo Có bán", Timestamp.from(Instant.now()),
+                "vanannek", "anhoang"));
+        messages.add(new ChatMessage("Hihi", Timestamp.from(Instant.now()),
                 "vanannek", "anhoang"));
     }
 

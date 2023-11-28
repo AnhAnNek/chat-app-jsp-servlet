@@ -69,20 +69,16 @@
 <div class="chat-container">
     <div class="conversation-list" id="conversationList">
         <ul id="conversationListUl">
-            <li onclick="loadMessages('queanpham')">queanpham</li>
         </ul>
     </div>
 
     <div class="message-pane">
         <div class="chat" id="chat">
-<%--            <strong style="color: green;"></strong>[message]<br/>--%>
         </div>
 
         <input type="text" id="msg" class="message-input" placeholder="Type your message...">
         <button onclick="sendMessage()">Send</button>
     </div>
-
-    <button onclick="fetchChattedUsers('${user.username}')">Load Conversations</button>
 </div>
 
 <script type="text/javascript">
@@ -183,7 +179,7 @@
     }
 
     function clearConversations() {
-        const conversationList = document.getElementById('conversationList');
+        const conversationList = document.getElementById('conversationListUl');
         conversationList.innerHTML = '';
     }
 
@@ -204,7 +200,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        // fetchChattedUsers(currentUsername);
+        fetchChattedUsers(currentUsername);
     });
 
     document.getElementById("msg").addEventListener("keyup", function(event) {
