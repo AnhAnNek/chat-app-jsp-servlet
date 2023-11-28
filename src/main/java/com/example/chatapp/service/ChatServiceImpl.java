@@ -1,19 +1,19 @@
 package com.example.chatapp.service;
 
-import com.example.chatapp.model.Chat;
+import com.example.chatapp.model.ChatMessage;
 import com.example.chatapp.websocket.ChatWebsocket;
 
-import javax.websocket.EncodeException;
-import java.io.IOException;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
-public class ChatServiceImpl extends ChatService {
-
+public class ChatServiceImpl implements ChatService {
     private static ChatService chatService = null;
+    protected static final Set<ChatWebsocket> chatWebsockets = new CopyOnWriteArraySet<>();
 
     private ChatServiceImpl() {
     }
 
-    public synchronized static ChatService getInstance() {
+    public synchronized static ChatService getIns() {
         if (chatService == null) {
             chatService = new ChatServiceImpl();
         }
@@ -27,31 +27,18 @@ public class ChatServiceImpl extends ChatService {
 
     @Override
     public boolean close(ChatWebsocket chatWebsocket) {
-        return chatWebsockets.remove(chatWebsocket);
+        return chatWebsockets
+                .removeIf(cw -> cw.getSession().equals(chatWebsocket.getSession()));
     }
 
     @Override
-    public void sendMessageToAllUsers(Chat message) {
-        chatWebsockets.stream().forEach(chatWebsocket -> {
-            try {
-                chatWebsocket.getSession().getBasicRemote().sendObject(message);
-            } catch (IOException | EncodeException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-    @Override
-    public void sendMessageToOneUser(Chat message) {
-    }
-
-    @Override
-    public boolean isUserOnline(String username) {
+    public void sendMessageToOneUser(ChatMessage message) {
+        String targetUser = message.getSenderUsername();
         for (ChatWebsocket chatWebsocket : chatWebsockets) {
-            if (chatWebsocket.getUsername().equals(username)) {
-                return true;
+            if (chatWebsocket.getSenderUsername().equals(targetUser)) {
+                chatWebsocket.sendMessage(message);
+                return;
             }
         }
-        return false;
     }
 }

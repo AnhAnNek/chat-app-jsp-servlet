@@ -1,24 +1,35 @@
 package com.example.chatapp.model;
 
-public class User {
-    private String username;
-    private String conversationId;
-    private boolean isOnline;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-    public User() {
+import java.util.HashSet;
+import java.util.Set;
+
+public class User {
+    public enum ERole {
+        SALESPERSON, CUSTOMER
     }
 
-    public User(String username, String conversationId, boolean isOnline) {
+    private String username;
+    private ERole role;
+
+    @JsonIgnore
+    private Set<ChatMessage> chats;
+
+    public User() {
+        chats = new HashSet<>();
+    }
+
+    public User(String username, ERole role) {
         this.username = username;
-        this.conversationId = conversationId;
-        this.isOnline = isOnline;
+        this.role = role;
+        chats = new HashSet<>();
     }
 
     @Override
     public String toString() {
         return "User{" +
                 "username='" + username + '\'' +
-                ", isOnline=" + isOnline +
                 '}';
     }
 
@@ -30,19 +41,19 @@ public class User {
         this.username = username;
     }
 
-    public String getConversationId() {
-        return conversationId;
+    public ERole getRole() {
+        return role;
     }
 
-    public void setConversationId(String conversationId) {
-        this.conversationId = conversationId;
+    public void setRole(ERole role) {
+        this.role = role;
     }
 
-    public boolean isOnline() {
-        return isOnline;
+    public Set<ChatMessage> getChats() {
+        return chats;
     }
 
-    public void setOnline(boolean online) {
-        isOnline = online;
+    public void setChats(Set<ChatMessage> chats) {
+        this.chats = chats;
     }
 }
