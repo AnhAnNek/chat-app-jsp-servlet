@@ -77,13 +77,13 @@
         </div>
 
         <input type="text" id="msg" class="message-input" placeholder="Type your message...">
-        <button onclick="sendMessage()">Send</button>
+        <button onclick="sendMsg()">Send</button>
     </div>
 </div>
 
 <script type="text/javascript">
     var currentUsername = "${user.username}";
-    var curChattingUsername = "queanpham";
+    var curChattingUsername = null;
     var ws = getWebsocket(curChattingUsername);
 
     function getWebsocket(receiver) {
@@ -114,8 +114,6 @@
             .then(chattedUsers => {
                 clearConversations();
                 chattedUsers.forEach(user => {
-                    console.log(user.username);
-                    console.log(user.role);
                     addConversationItem(user.username);
                 });
             })
@@ -128,23 +126,19 @@
         }
         curChattingUsername = receiver;
         ws = getWebsocket(receiver);
-        fetchMessages(currentUsername, receiver);
+        fetchMessagesForSalesperson(currentUsername, receiver);
     }
 
-    function fetchMessages(sender, receiver) {
+    function fetchMessagesForSalesperson(sender, receiver) {
         const contextPath = '<%= request.getContextPath() %>';
         const restUrl = window.location.protocol + "//" + window.location.host + contextPath +
-            "/get-messages?sender=" + sender + "&receiver=" + receiver;
+            "/get-messages-for-salesperson?sender=" + sender + "&receiver=" + receiver;
         console.log("fetchMessages - restUrl: " + restUrl);
         fetch(restUrl)
             .then(response => response.json())
             .then(chatMessages => {
                 clearMsgs();
                 chatMessages.forEach(cm => {
-                    console.log(cm.message);
-                    console.log(cm.sendingTime);
-                    console.log(cm.senderUsername);
-                    console.log(cm.receiverUsername);
                     addMessage(cm);
                 });
             })
@@ -176,13 +170,27 @@
         }
     }
 
-    function sendMessage() {
-        const msgStr = document.getElementById("msg").value.trim();
+    function sendMsg() {
+        const inputMsg = document.getElementById("msg");
+        const msgStr = inputMsg.value.trim();
 
         if(msgStr) {
+            addTextToChatbox(msgStr, true, currentUsername);
             ws.send(msgStr);
-            console.log(msgStr)
-            document.getElementById("msg").value="";
+            inputMsg.value="";
+        }
+    }
+
+    function addTextToChatbox(msg, isSender, sender) {
+        const chat = document.getElementById('chat');
+
+        if (chat) {
+            const senderColor = isSender ? 'green' : 'red';
+            const formattedSender = '<span style="color: ' + senderColor + ';">[' + sender + ']</span>';
+            const formattedMessage = formattedSender + ': ' + msg + '<br/>';
+            chat.innerHTML += formattedMessage;
+        } else {
+            console.error("Element 'chat' not found.");
         }
     }
 
@@ -207,14 +215,14 @@
         }
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        fetchChattedUsers(currentUsername);
-    });
-
     document.getElementById("msg").addEventListener("keyup", function(event) {
         if (event.key === "Enter") {
-            sendMessage();
+            sendMsg();
         }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchChattedUsers(currentUsername);
     });
 </script>
 

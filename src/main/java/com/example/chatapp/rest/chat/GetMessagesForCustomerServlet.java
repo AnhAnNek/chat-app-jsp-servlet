@@ -13,17 +13,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
-@WebServlet("/get-messages")
-public class GetMessagesServlet extends HttpServlet {
+@WebServlet("/get-messages-for-customer")
+public class GetMessagesForCustomerServlet extends HttpServlet {
 
     private MessageServiceImpl messageService = MessageServiceImpl.getIns();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String sender = req.getParameter("sender");
-        String receiver = req.getParameter("receiver");
+        String sender = req.getParameter("username");
 
-        String jsonMsgs = getMsgs(sender, receiver);
+        String jsonMsgs = getMsgsForCustomer(sender);
 
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
@@ -33,8 +32,8 @@ public class GetMessagesServlet extends HttpServlet {
         pw.close();
     }
 
-    private String getMsgs(String sender, String receiver) {
-        List<ChatMessage> msgs = messageService.getMessages(sender, receiver);
+    private String getMsgsForCustomer(String username) {
+        List<ChatMessage> msgs = messageService.getMessagesForCustomer(username);
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.writeValueAsString(msgs);

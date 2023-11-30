@@ -21,7 +21,7 @@
 
     <div class="chatbox__group-items">
         <input class="chatbox__input" name="" id="input-msg" cols="30" rows="10"></textarea>
-        <img onclick="sendMessage()" class="chatbox__send" src="<c:url value="/static/images/send.svg"/>" alt=""/>
+        <img onclick="sendMsg()" class="chatbox__send" src="<c:url value="/static/images/send.svg"/>" alt=""/>
     </div>
 </div>
 
@@ -45,22 +45,24 @@
             '/chat/' + currentUsername + '/' + receiver);
     }
 
-    function sendMessage() {
+    function sendMsg() {
         console.log("Click sendMsg");
-        const msgStr = document.getElementById("input-msg").value.trim();
+        const inputMsg = document.getElementById("input-msg");
+        const msgStr = inputMsg.value.trim();
         if (msgStr) {
+            addTextToChatbox(msgStr, true);
             ws.send(msgStr);
-            document.getElementById("input-msg").value = "";
+            inputMsg.value = "";
         }
     }
 
     ws.onmessage = function (event) {
         var chatMessage = JSON.parse(event.data);
         curChattingUsername = chatMessage.senderUsername;
-        addMessageToChatbox(chatMessage)
+        addMsg(chatMessage)
     };
 
-    function addMessageToChatbox(chatMessage) {
+    function addMsg(chatMessage) {
         const msgStr = chatMessage.message;
         if (chatMessage.type === "TEXT") {
             const isSender = chatMessage.senderUsername === currentUsername;
@@ -85,8 +87,7 @@
                 <li class="bubble-chat__item">
                     <p>` + message + `</p>
                 </li>
-            </ul>
-        `;
+            </ul>`;
         } else {
             chatContainer.innerHTML += `
             <img class="chat__bot-img" src="<c:url value="/static/images/account_icon.svg"/>" alt=""/>
@@ -94,8 +95,7 @@
                 <li class="bubble-chat__item">
                     <p>` + message + `</p>
                 </li>
-            </ul>
-        `;
+            </ul>`;
         }
 
         chatboxContent.appendChild(chatContainer);
@@ -117,14 +117,37 @@
         </div>`;
     }
 
+    function fetchMsgsForCustomer(username) {
+        const contextPath = '<%= request.getContextPath() %>';
+        const restUrl = window.location.protocol + "//" + window.location.host + contextPath +
+            "/get-messages-for-customer?username=" + username;
+        console.log("fetchMessages - restUrl: " + restUrl);
+        fetch(restUrl)
+            .then(response => response.json())
+            .then(chatMessages => {
+                clearMsgs();
+                chatMessages.forEach(addMsg);
+            })
+            .catch(error => console.error('Error fetching messages:', error));
+    }
+
+    function clearMsgs() {
+        const chatboxContent = document.querySelector('.chatbox__content');
+        if (chatboxContent) {
+            chatboxContent.innerHTML = '';
+        } else {
+            console.error("Element 'chat' not found.");
+        }
+    }
+
     document.getElementById("input-msg").addEventListener("keyup", function (event) {
         if (event.key === "Enter") {
-            sendMessage();
+            sendMsg();
         }
     });
 
     document.addEventListener("DOMContentLoaded", function () {
-        // addNotificationToChatbox("hihihi");
+        fetchMsgsForCustomer(currentUsername);
     });
 </script>
 

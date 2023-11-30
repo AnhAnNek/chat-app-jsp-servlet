@@ -32,14 +32,6 @@ public class InfoServlet extends HttpServlet {
 
         String url;
         if (user.getRole().equals(User.ERole.SALESPERSON)) {
-//            List<User> customers = MessageService.getIns()
-//                    .getChattedUsersByCurrentUser(username);
-//            List<ChatMessage> userMessages = MessageService.getIns()
-//                    .getMessagesByReceiver(username, "queanpham");
-//
-//            req.setAttribute("customers", customers);
-//            req.setAttribute("userMessages", userMessages);
-
             url = "/WEB-INF/views/salesperson-chatbox.jsp";
         } else {
             url = "/WEB-INF/views/customer-main-page.jsp";

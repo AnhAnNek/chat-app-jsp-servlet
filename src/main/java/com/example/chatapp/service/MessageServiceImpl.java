@@ -70,7 +70,15 @@ public class MessageServiceImpl {
                 .collect(Collectors.toList());
     }
 
-    public List<ChatMessage> getMessages(String sender, String receiver) {
+    public List<ChatMessage> getMessagesForCustomer(String username) {
+        return messages.stream()
+                .filter(cm -> cm.getReceiverUsername().equals(username) ||
+                        cm.getSenderUsername().equals(username))
+                .sorted(Comparator.comparing(ChatMessage::getSendingTime))
+                .collect(Collectors.toList());
+    }
+
+    public List<ChatMessage> getMessagesForSalesperson(String sender, String receiver) {
         return messages.stream()
                 .filter(cm -> isMyChatMessage(cm, sender, receiver))
                 .sorted(Comparator.comparing(ChatMessage::getSendingTime))
@@ -87,7 +95,7 @@ public class MessageServiceImpl {
         return false;
     }
 
-    public List<ChatMessage> getMessages() {
+    public List<ChatMessage> getMessagesForSalesperson() {
         return messages;
     }
 

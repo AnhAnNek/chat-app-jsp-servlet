@@ -14,4 +14,6 @@ public interface ChatService {
     boolean close(ChatWebsocket chatWebsocket);
 
     void sendMessageToOneUser(ChatMessage message);
+
+    boolean isOnline(String username);
 }

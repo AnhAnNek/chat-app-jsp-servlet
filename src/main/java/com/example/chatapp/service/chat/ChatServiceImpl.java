@@ -41,4 +41,14 @@ public class ChatServiceImpl implements ChatService {
             }
         }
     }
+
+    @Override
+    public boolean isOnline(String username) {
+        for (ChatWebsocket chatWebsocket : chatWebsockets) {
+            if (chatWebsocket.getSenderUsername().equals(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
