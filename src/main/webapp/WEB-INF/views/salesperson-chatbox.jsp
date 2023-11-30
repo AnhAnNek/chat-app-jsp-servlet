@@ -84,16 +84,20 @@
 <script type="text/javascript">
     var currentUsername = "${user.username}";
     var curChattingUsername = "queanpham";
-    var wsUrl;
+    var ws = getWebsocket(curChattingUsername);
 
-    if (window.location.protocol === 'http:') {
-        wsUrl = 'ws://';
-    } else {
-        wsUrl = 'wss://';
+    function getWebsocket(receiver) {
+        let wsUrl;
+
+        if (window.location.protocol === 'http:') {
+            wsUrl = 'ws://';
+        } else {
+            wsUrl = 'wss://';
+        }
+        const contextPath = '<%= request.getContextPath() %>';
+        return new WebSocket(wsUrl + window.location.host + contextPath +
+            '/chat/' + currentUsername + '/' + receiver);
     }
-    var contextPath = '<%= request.getContextPath() %>';
-    var ws = new WebSocket(wsUrl + window.location.host + contextPath +
-        '/chat/' + currentUsername + '/' + curChattingUsername);
 
     ws.onmessage = function(event) {
         const chatMessage = JSON.parse(event.data);
@@ -119,8 +123,12 @@
     }
 
     function loadMessages(receiver) {
-        curChattingUsername = receiver
-        fetchMessages(currentUsername, receiver)
+        if (curChattingUsername === receiver) {
+            return;
+        }
+        curChattingUsername = receiver;
+        ws = getWebsocket(receiver);
+        fetchMessages(currentUsername, receiver);
     }
 
     function fetchMessages(sender, receiver) {

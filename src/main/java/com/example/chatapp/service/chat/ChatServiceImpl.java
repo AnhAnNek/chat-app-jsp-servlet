@@ -1,4 +1,4 @@
-package com.example.chatapp.service;
+package com.example.chatapp.service.chat;
 
 import com.example.chatapp.model.ChatMessage;
 import com.example.chatapp.websocket.ChatWebsocket;

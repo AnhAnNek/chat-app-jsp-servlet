@@ -3,7 +3,12 @@ package com.example.chatapp.model;
 import java.sql.Timestamp;
 
 public class ChatMessage {
+    public enum EType {
+        TEXT, NOTIFICATION
+    }
+
     private String message;
+    private EType type;
     private Timestamp sendingTime;
     private String senderUsername;
     private String receiverUsername;
@@ -11,8 +16,9 @@ public class ChatMessage {
     public ChatMessage() {
     }
 
-    public ChatMessage(String message, Timestamp sendingTime, String senderUsername, String receiverUsername) {
+    public ChatMessage(String message, EType type, Timestamp sendingTime, String senderUsername, String receiverUsername) {
         this.message = message;
+        this.type = type;
         this.sendingTime = sendingTime;
         this.senderUsername = senderUsername;
         this.receiverUsername = receiverUsername;
@@ -20,11 +26,12 @@ public class ChatMessage {
 
     @Override
     public String toString() {
-        return "Chat{" +
+        return "ChatMessage{" +
                 "message='" + message + '\'' +
+                ", type=" + type +
                 ", sendingTime=" + sendingTime +
-                ", sender=" + senderUsername +
-                ", receiver=" + receiverUsername +
+                ", senderUsername='" + senderUsername + '\'' +
+                ", receiverUsername='" + receiverUsername + '\'' +
                 '}';
     }
 
@@ -34,6 +41,14 @@ public class ChatMessage {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public EType getType() {
+        return type;
+    }
+
+    public void setType(EType type) {
+        this.type = type;
     }
 
     public Timestamp getSendingTime() {

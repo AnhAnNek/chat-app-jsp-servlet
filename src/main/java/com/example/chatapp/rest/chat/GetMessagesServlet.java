@@ -1,7 +1,7 @@
 package com.example.chatapp.rest.chat;
 
 import com.example.chatapp.model.ChatMessage;
-import com.example.chatapp.service.MessageService;
+import com.example.chatapp.service.MessageServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.ServletException;
@@ -16,7 +16,7 @@ import java.util.List;
 @WebServlet("/get-messages")
 public class GetMessagesServlet extends HttpServlet {
 
-    private MessageService messageService = MessageService.getIns();
+    private MessageServiceImpl messageService = MessageServiceImpl.getIns();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

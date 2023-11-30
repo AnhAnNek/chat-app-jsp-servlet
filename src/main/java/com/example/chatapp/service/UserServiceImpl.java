@@ -4,19 +4,19 @@ import com.example.chatapp.model.User;
 
 import java.util.*;
 
-public class UserService {
-    private static UserService ins;
+public class UserServiceImpl {
+    private static UserServiceImpl ins;
 
-    public synchronized static UserService getIns() {
+    public synchronized static UserServiceImpl getIns() {
         if (ins == null) {
-            ins = new UserService();
+            ins = new UserServiceImpl();
         }
         return ins;
     }
 
     private Set<User> users;
 
-    private UserService() {
+    private UserServiceImpl() {
         users = new HashSet<>();
 
         users.add(new User("vanannek", User.ERole.SALESPERSON));

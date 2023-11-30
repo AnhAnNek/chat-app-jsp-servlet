@@ -10,42 +10,46 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MessageService {
+public class MessageServiceImpl {
 
-    private static MessageService ins;
+    private static MessageServiceImpl ins;
 
-    public synchronized static MessageService getIns() {
+    public synchronized static MessageServiceImpl getIns() {
         if (ins == null) {
-            ins = new MessageService();
+            ins = new MessageServiceImpl();
         }
         return ins;
     }
 
     private List<ChatMessage> messages;
 
-    private MessageService() {
+    private MessageServiceImpl() {
         messages = new ArrayList<>();
 
-        messages.add(new ChatMessage("Chào Shop", Timestamp.from(Instant.now()),
+        messages.add(new ChatMessage("Chào Shop", ChatMessage.EType.TEXT, Timestamp.from(Instant.now()),
                 "queanpham", "vanannek"));
-        messages.add(new ChatMessage("Cho e hỏi", Timestamp.from(Instant.now()),
+        messages.add(new ChatMessage("Cho e hỏi", ChatMessage.EType.TEXT, Timestamp.from(Instant.now()),
                 "queanpham", "vanannek"));
-        messages.add(new ChatMessage("Laptop Asus X515 bao nhiêu ạ", Timestamp.from(Instant.now()),
-                "queanpham", "vanannek"));
+        messages.add(new ChatMessage("Laptop Asus X515 bao nhiêu ạ", ChatMessage.EType.TEXT,
+                Timestamp.from(Instant.now()), "queanpham", "vanannek"));
 
-        messages.add(new ChatMessage("Đéo Biết", Timestamp.from(Instant.now()),
+        messages.add(new ChatMessage( "`vanannek` open chat.", ChatMessage.EType.NOTIFICATION, Timestamp.from(Instant.now()),
                 "vanannek", "queanpham"));
-        messages.add(new ChatMessage("Hihi", Timestamp.from(Instant.now()),
+        messages.add(new ChatMessage("Đéo Biết", ChatMessage.EType.TEXT, Timestamp.from(Instant.now()),
+                "vanannek", "queanpham"));
+        messages.add(new ChatMessage("Hihi", ChatMessage.EType.TEXT, Timestamp.from(Instant.now()),
+                "vanannek", "queanpham"));
+        messages.add(new ChatMessage( "`vanannek` close chat.", ChatMessage.EType.NOTIFICATION, Timestamp.from(Instant.now()),
                 "vanannek", "queanpham"));
 
 
-        messages.add(new ChatMessage("Chào Shop", Timestamp.from(Instant.now()),
+        messages.add(new ChatMessage("Chào Shop", ChatMessage.EType.TEXT, Timestamp.from(Instant.now()),
                 "anhoang", "vanannek"));
-        messages.add(new ChatMessage("Adapter cho Asus X515 bao nhiêu ạ", Timestamp.from(Instant.now()),
-                "anhoang", "vanannek"));
-        messages.add(new ChatMessage("Đéo Có bán", Timestamp.from(Instant.now()),
+        messages.add(new ChatMessage("Adapter cho Asus X515 bao nhiêu ạ", ChatMessage.EType.TEXT,
+                Timestamp.from(Instant.now()), "anhoang", "vanannek"));
+        messages.add(new ChatMessage("Đéo Có bán", ChatMessage.EType.TEXT, Timestamp.from(Instant.now()),
                 "vanannek", "anhoang"));
-        messages.add(new ChatMessage("Hihi", Timestamp.from(Instant.now()),
+        messages.add(new ChatMessage("Hihi", ChatMessage.EType.TEXT, Timestamp.from(Instant.now()),
                 "vanannek", "anhoang"));
     }
 
@@ -61,7 +65,7 @@ public class MessageService {
                 .collect(Collectors.toList());
 
         return receiverUsernames.stream()
-                .map(username -> UserService.getIns().getByUsername(username))
+                .map(username -> UserServiceImpl.getIns().getByUsername(username))
                 .distinct()
                 .collect(Collectors.toList());
     }

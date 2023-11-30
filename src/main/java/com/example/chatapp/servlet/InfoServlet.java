@@ -1,9 +1,7 @@
 package com.example.chatapp.servlet;
 
-import com.example.chatapp.model.ChatMessage;
 import com.example.chatapp.model.User;
-import com.example.chatapp.service.MessageService;
-import com.example.chatapp.service.UserService;
+import com.example.chatapp.service.UserServiceImpl;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,10 +13,10 @@ import java.io.IOException;
 @WebServlet("/info")
 public class InfoServlet extends HttpServlet {
 
-    private UserService userService;
+    private UserServiceImpl userService;
 
     public InfoServlet() {
-        userService = UserService.getIns();
+        userService = UserServiceImpl.getIns();
     }
 
     @Override
@@ -42,10 +40,16 @@ public class InfoServlet extends HttpServlet {
 //            req.setAttribute("customers", customers);
 //            req.setAttribute("userMessages", userMessages);
 
-            url = "/salesperson-chatbox.jsp";
+            url = "/WEB-INF/views/salesperson-chatbox.jsp";
         } else {
-            url = "/customer-chatbox.jsp";
+            url = "/WEB-INF/views/customer-main-page.jsp";
         }
+        getServletContext().getRequestDispatcher(url).forward(req, resp);
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String url = "/WEB-INF/views/input.jsp";
         getServletContext().getRequestDispatcher(url).forward(req, resp);
     }
 }

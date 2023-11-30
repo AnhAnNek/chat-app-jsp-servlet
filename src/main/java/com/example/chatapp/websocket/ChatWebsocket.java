@@ -2,10 +2,10 @@ package com.example.chatapp.websocket;
 
 import com.example.chatapp.model.ChatMessage;
 import com.example.chatapp.model.User;
-import com.example.chatapp.service.ChatService;
-import com.example.chatapp.service.ChatServiceImpl;
-import com.example.chatapp.service.MessageService;
-import com.example.chatapp.service.UserService;
+import com.example.chatapp.service.chat.ChatService;
+import com.example.chatapp.service.chat.ChatServiceImpl;
+import com.example.chatapp.service.MessageServiceImpl;
+import com.example.chatapp.service.UserServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.websocket.OnClose;
@@ -25,8 +25,8 @@ public class ChatWebsocket {
     private String senderUsername;
     private String receiverUsername;
     private ChatService chatService = ChatServiceImpl.getIns();
-    private UserService userService = UserService.getIns();
-    private MessageService messageService = MessageService.getIns();
+    private UserServiceImpl userService = UserServiceImpl.getIns();
+    private MessageServiceImpl messageService = MessageServiceImpl.getIns();
 
     @OnOpen
     public void onOpen(@PathParam("senderUsername") String senderUsername,
@@ -44,16 +44,26 @@ public class ChatWebsocket {
         }
         List<ChatMessage> msgs = messageService.getMessages(senderUsername, receiverUsername);
         msgs.forEach(this::sendMessage);
+
+        String msg = String.format("`%s` join chat.", senderUsername);
+        ChatMessage chatMessage = new ChatMessage(msg, ChatMessage.EType.NOTIFICATION,
+                Timestamp.from(Instant.now()), senderUsername, receiverUsername);
+        chatService.sendMessageToOneUser(chatMessage);
     }
 
     @OnClose
     public void onClose(Session curSession) {
-        chatService.close(this);
+        if (chatService.close(this)) {
+            String msg = String.format("`%s` close chat.", senderUsername);
+            ChatMessage chatMessage = new ChatMessage(msg, ChatMessage.EType.NOTIFICATION,
+                    Timestamp.from(Instant.now()), senderUsername, receiverUsername);
+            chatService.sendMessageToOneUser(chatMessage);
+        }
     }
 
     @OnMessage
     public void onMessage(String message, Session session) {
-        ChatMessage chatMessage = new ChatMessage(message, Timestamp.from(Instant.now()),
+        ChatMessage chatMessage = new ChatMessage(message, ChatMessage.EType.TEXT, Timestamp.from(Instant.now()),
                 senderUsername, receiverUsername);
         chatService.sendMessageToOneUser(chatMessage);
         sendMessage(chatMessage);
